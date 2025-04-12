@@ -66,6 +66,7 @@ class Options:
         self.parser.add_argument('--use_handcraft', type=int, default=0, help='')
         self.parser.add_argument('--feature_history', type=int, default=48, help='')
         self.parser.add_argument('--calibration', type=int, default=48, help='should be same as feature_hist')
+        ### 여기야 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         self.parser.add_argument('--max_epi_length', type=int, default=2000, help='')  # 30days, 5 min, 8640
         self.parser.add_argument('--n_action', type=int, default=1, help='number of control actions')
         self.parser.add_argument('--n_hidden', type=int, default=12, help='hidden units in lstm')

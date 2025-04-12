@@ -151,7 +151,7 @@ def set_agent_parameters(args):
 
 
 def main():
-    args = Options().parse()
+    args = Options().parse() # get the arguments from the command line.
     args, agent, device = set_agent_parameters(args)
 
     with open(args.experiment_dir + '/args.json', 'w') as fp:
