@@ -72,6 +72,11 @@ class PPO:
             print('Value Network Parameters: {}'.format(
                 sum(p.numel() for p in self.policy.Critic.parameters() if p.requires_grad)))
 
+    def calculate_rmse(predictions, targets):
+        mse = torch.mean((predictions - targets) ** 2)
+        rmse = torch.sqrt(mse)
+        return rmse
+
     def save_log(self, log_name, file_name):
         with open(self.args.experiment_dir + file_name + '.csv', 'a+') as f:
             csvWriter = csv.writer(f, delimiter=',')
@@ -177,6 +182,8 @@ class PPO:
         value_grad = torch.zeros(1, device=self.device)
         true_var = torch.zeros(1, device=self.device)
         buffer_len = self.rollout_buffer['len']
+        rmse_log = torch.zeros(1, device=self.device)  # RMSE 기록용
+
         for i in range(self.train_v_iters):
             start_idx = 0
             while start_idx < buffer_len:
@@ -194,6 +201,10 @@ class PPO:
                 val_count += 1
                 start_idx += self.batch_size
 
+                # RMSE 계산
+                # rmse = calculate_rmse(state_values, returns_batch)
+                # rmse_log += rmse.detach()
+
                 # logging.
                 val_loss_log += value_loss.detach()
                 y_pred = state_values.detach().flatten()
@@ -201,7 +212,11 @@ class PPO:
                 var_y = torch.var(y_true)
                 true_var += var_y
                 explained_var += 1 - torch.var(y_true - y_pred) / (var_y + 1e-5)
+        
         #print('\nvalue update: explained varience is {} true variance is {}'.format(explained_var / val_count, true_var / val_count))
+        print(f"RMSE for value function: {rmse_log / val_count}")
+        self.save_log([['train_rmse', rmse_log / val_count]], '/model_log')
+
         return value_grad / val_count, val_loss_log, explained_var / val_count, true_var / val_count
 
     def update(self, rollout):
@@ -229,7 +244,7 @@ class PPO:
             param_group['lr'] = self.pi_lr
         for param_group in self.optimizer_Critic.param_groups:
             param_group['lr'] = self.vf_lr
-
+    
     def run(self, args, patients, env_ids, seed):
         MAX_INTERACTIONS = 4000 if args.debug == 1 else 800000
         LR_DECAY_INTERACTIONS = 2000 if args.debug == 1 else 600000
