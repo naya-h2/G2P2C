@@ -16,7 +16,6 @@ import torch
 from utils.options import Options
 from agents.g2p2c.g2p2c import G2P2C
 
-
 def load_agent(
     args_json_path: str,
     params_py_path: str,
@@ -70,7 +69,7 @@ def load_agent(
     actor_path = os.path.join(ckpt_dir, f'episode_{episode}_Actor.pth')
     critic_path = os.path.join(ckpt_dir, f'episode_{episode}_Critic.pth')
 
-    # 6. Load model objects
+    # # 6. Load model objects
     agent.policy.Actor = torch.load(actor_path, map_location=device)
     agent.policy.Critic = torch.load(critic_path, map_location=device)
     agent.policy.Actor.eval()

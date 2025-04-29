@@ -12,10 +12,11 @@ from g2p2c_agent_api import load_agent, infer_action
 
 # 에이전트 인스턴스 생성 (모델 로드 및 체크포인트 적용)
 _AGENT = load_agent(
-    args_json_path="results/test/args.json",
-    params_py_path="results/test/code/parameters.py",
+    args_json_path="../results/test/args.json",
+    params_py_path="../results/test/code/parameters.py",
     device=torch.device("cpu"),
 )
+
 
 # ----- FastAPI 모델 정의 -----
 
@@ -40,6 +41,10 @@ app.add_middleware(
 )
 
 # ----- 실제 Inference 핸들러 -----
+
+@app.get("/")
+def test():
+    return {"content": "example"}
 
 @app.post("/predict_action", response_model=ActionResponse)
 def predict_action(req: StateRequest):
