@@ -44,4 +44,3 @@ class Memory:
         data = dict(obs=self.observation, feat=self.state_features, act=self.actions, v_pred=self.state_values,
                     logp=self.logprobs, first_flag=self.first_flag, reward=self.rewards, cgm_target=self.cgm_target)
         return {k: torch.as_tensor(v, dtype=torch.float32, device=self.device) for k, v in data.items()}
-
